@@ -12,7 +12,7 @@
     "copy": "cp CNAME storybook-static/",
     "build-storybook": "build-storybook -s public",
     "chromatic": "npx chromatic --project-token ugo6c655mvm --auto-accept-changes",
-    "postinstall": "cd ./node_modules/reaflow && npm install && npm run build"
+    "postinstall": "npm install && npm run build"
   },
   "source": "src/index.ts",
   "main": "dist/index.cjs.js",

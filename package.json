@@ -12,7 +12,7 @@
     "copy": "cp CNAME storybook-static/",
     "build-storybook": "build-storybook -s public",
     "chromatic": "npx chromatic --project-token ugo6c655mvm --auto-accept-changes",
-    "prepare": "yarn run build"
+    "prepare": "npm run build"
   },
   "source": "src/index.ts",
   "main": "dist/index.cjs.js",

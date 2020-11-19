@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, ReactElement } from 'react';
 import classNames from 'classnames';
 import { motion } from 'framer-motion';
 import css from './Add.module.scss';
@@ -6,8 +6,11 @@ import css from './Add.module.scss';
 export interface AddProps {
   x: number;
   y: number;
+  offsetX?: number;
+  offsetY?: number;
   size?: number;
   className?: string;
+  custom?: ReactElement;
   hidden?: boolean;
   onEnter?: (event: React.MouseEvent<SVGGElement, MouseEvent>) => void;
   onLeave?: (event: React.MouseEvent<SVGGElement, MouseEvent>) => void;
@@ -17,12 +20,15 @@ export interface AddProps {
 export const Add: FC<Partial<AddProps>> = ({
   x,
   y,
+  offsetX = 10,
+  offsetY = 10,
   className,
   size = 15,
   hidden = true,
   onEnter = () => undefined,
   onLeave = () => undefined,
-  onClick = () => undefined
+  onClick = () => undefined,
+  custom
 }) => {
   if (hidden) {
     return null;
@@ -31,6 +37,21 @@ export const Add: FC<Partial<AddProps>> = ({
   const half = size / 2;
   const translateX = x - half;
   const translateY = y - half;
+
+  if (custom) {
+    return (
+      <foreignObject
+        style={{ overflow: 'visible' }}
+        x={translateX - offsetX}
+        y={translateY - offsetY}
+        width={1}
+        height={1}
+        onClick={onClick}
+      >
+        {custom}
+      </foreignObject>
+    );
+  }
 
   return (
     <motion.g

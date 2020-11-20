@@ -828,7 +828,7 @@
     var css$5 = {"rect":"Node-module_rect__1dlsl","children":"Node-module_children__21ooj","disabled":"Node-module_disabled__1DfSa","dragging":"Node-module_dragging__36JI3","active":"Node-module_active__3bPi_","unlinkable":"Node-module_unlinkable__1MEKJ","deleteHovered":"Node-module_deleteHovered__1_CqM"};
     styleInject(css_248z$5);
 
-    const Node = ({ id, x, y, ports, labels, height, width, properties, className, rx = 2, ry = 2, offsetX = 0, offsetY = 0, icon, disabled, style, children, nodes, edges, childEdge = React__default['default'].createElement(Edge, null), childNode = React__default['default'].createElement(Node, null), remove = React__default['default'].createElement(Remove, null), port = React__default['default'].createElement(Port, null), label = React__default['default'].createElement(Label, null), onRemove = () => undefined, onDrag = () => undefined, onDragStart = () => undefined, onDragEnd = () => undefined, onClick = () => undefined, onKeyDown = () => undefined, onEnter = () => undefined, onLeave = () => undefined }) => {
+    const Node = ({ id, x, y, ports, labels, height, width, properties, className, rx = 2, ry = 2, offsetX = 0, offsetY = 0, icon, disabled, style, children, nodes, edges, childEdge = React__default['default'].createElement(Edge, null), childNode = React__default['default'].createElement(Node, null), remove = React__default['default'].createElement(Remove, null), port = React__default['default'].createElement(Port, null), label = React__default['default'].createElement(Label, null), isDraggable = false, onRemove = () => undefined, onDrag = () => undefined, onDragStart = () => undefined, onDragEnd = () => undefined, onClick = () => undefined, onKeyDown = () => undefined, onEnter = () => undefined, onLeave = () => undefined }) => {
         const controls = framerMotion.useAnimation();
         const _a = useCanvas(), { canLinkNode, enteredNode, selections, readonly } = _a, canvas = __rest(_a, ["canLinkNode", "enteredNode", "selections", "readonly"]);
         const [deleteHovered, setDeleteHovered] = React.useState(false);
@@ -838,7 +838,8 @@
         const newX = x + offsetX;
         const newY = y + offsetY;
         const isLinkable = checkNodeLinkable(properties, enteredNode, canLinkNode);
-        const isMultiPort = (ports === null || ports === void 0 ? void 0 : ports.filter(p => { var _a; return !((_a = p.properties) === null || _a === void 0 ? void 0 : _a.hidden); }).length) > 1;
+        const isMultiPort = (ports === null || ports === void 0 ? void 0 : ports.filter((p) => { var _a; return !((_a = p.properties) === null || _a === void 0 ? void 0 : _a.hidden); }).length) > 1;
+        const [dragY, setDragY] = React.useState(0);
         const bind = useNodeDrag({
             x: newX,
             y: newY,
@@ -849,6 +850,7 @@
             onDrag: (...props) => {
                 canvas.onDrag(...props);
                 onDrag(...props);
+                setDragY(props[0].movement[1]);
             },
             onDragStart: (...props) => {
                 canvas.onDragStart(...props);
@@ -858,6 +860,8 @@
             onDragEnd: (...props) => {
                 canvas.onDragEnd(...props);
                 onDragEnd(...props);
+                console.log('props', props[0]);
+                setDragY(y);
                 setDragging(false);
             }
         });
@@ -892,7 +896,71 @@
             const element = typeof childEdge === 'function' ? childEdge(e) : childEdge;
             return (React__default['default'].createElement(rdk.CloneElement, Object.assign({ key: e.id, element: element, id: `${id}-edge-${e.id}`, disabled: disabled }, e)));
         }, [childEdge, disabled, id]);
-        return (React__default['default'].createElement(framerMotion.motion.g, { initial: {
+        return isDraggable ? (React__default['default'].createElement(framerMotion.motion.g, { initial: {
+                cursor: 'initial',
+                opacity: 0,
+                translateX: x,
+                translateY: y
+            }, y: dragY, animate: controls },
+            React__default['default'].createElement(framerMotion.motion.rect, Object.assign({}, bind(), { tabIndex: -1, onKeyDown: (event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    onKeyDown(event, properties);
+                }, onClick: (event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    onClick(event, properties);
+                }, onTouchStart: (event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }, onMouseEnter: (event) => {
+                    event.stopPropagation();
+                    canvas.onEnter(event, properties);
+                    onEnter(event, properties);
+                }, onMouseLeave: (event) => {
+                    event.stopPropagation();
+                    canvas.onLeave(event, properties);
+                    onLeave(event, properties);
+                }, className: classNames__default['default'](css$5.rect, className, properties === null || properties === void 0 ? void 0 : properties.className, {
+                    [css$5.active]: isActive,
+                    [css$5.disabled]: disabled,
+                    [css$5.unlinkable]: isLinkable === false,
+                    [css$5.dragging]: dragging,
+                    [css$5.children]: (nodes === null || nodes === void 0 ? void 0 : nodes.length) > 0,
+                    [css$5.deleteHovered]: deleteHovered
+                }), style: style, height: height, width: width, rx: rx, ry: ry, initial: {
+                    opacity: 0
+                }, animate: {
+                    opacity: 1
+                } })),
+            children && (React__default['default'].createElement("foreignObject", { height: height, width: width, x: 0, y: 0 }, typeof children === 'function'
+                ? children({ height, width, x, y, node: properties })
+                : children)),
+            icon && properties.icon && (React__default['default'].createElement(rdk.CloneElement, Object.assign({ element: icon }, properties.icon))),
+            (labels === null || labels === void 0 ? void 0 : labels.length) > 0 &&
+                labels.map((l, index) => (React__default['default'].createElement(rdk.CloneElement, Object.assign({ element: label, key: index }, l)))),
+            (ports === null || ports === void 0 ? void 0 : ports.length) > 0 &&
+                ports.map((p) => (React__default['default'].createElement(rdk.CloneElement, Object.assign({ element: port, key: p.id, active: !isMultiPort && dragging, disabled: disabled, offsetX: newX, offsetY: newY, onDragStart: (event, initial, data) => {
+                        canvas.onDragStart(event, initial, properties, data);
+                        onDragStart(event, initial, properties, data);
+                        setDragging(true);
+                    }, onDrag: (event, initial, data) => {
+                        canvas.onDrag(event, initial, properties, data);
+                        onDrag(event, initial, properties, data);
+                    }, onDragEnd: (event, initial, data) => {
+                        canvas.onDragEnd(event, initial, properties, data);
+                        onDragEnd(event, initial, properties, data);
+                        setDragging(false);
+                    } }, p)))),
+            !disabled && isActive && !readonly && remove && (React__default['default'].createElement(rdk.CloneElement, { element: remove, y: height / 2, x: width, onClick: (event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    onRemove(event, properties);
+                    setDeleteHovered(false);
+                }, onEnter: () => setDeleteHovered(true), onLeave: () => setDeleteHovered(false) })),
+            React__default['default'].createElement("g", null,
+                (edges === null || edges === void 0 ? void 0 : edges.length) > 0 && edges.map(renderEdge),
+                (nodes === null || nodes === void 0 ? void 0 : nodes.length) > 0 && nodes.map(renderNode)))) : (React__default['default'].createElement(framerMotion.motion.g, { initial: {
                 cursor: 'initial',
                 opacity: 0,
                 translateX: x,

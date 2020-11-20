@@ -24,6 +24,7 @@ export interface NodeProps extends NodeDragEvents<NodeData, PortData> {
     offsetX?: number;
     offsetY?: number;
     disabled?: boolean;
+    isDraggable?: boolean;
     ports?: PortProps[];
     labels?: LabelProps[];
     properties: any;

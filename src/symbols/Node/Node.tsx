@@ -6,6 +6,7 @@ import React, {
   useEffect,
   useState
 } from 'react';
+import Draggable from 'react-draggable';
 import { motion, useAnimation } from 'framer-motion';
 import { Port, PortProps } from '../Port';
 import { Label, LabelProps } from '../Label';
@@ -44,6 +45,7 @@ export interface NodeProps extends NodeDragEvents<NodeData, PortData> {
   offsetX?: number;
   offsetY?: number;
   disabled?: boolean;
+  isDraggable?: boolean;
   ports?: PortProps[];
   labels?: LabelProps[];
   properties: any;
@@ -112,6 +114,7 @@ export const Node: FC<Partial<NodeProps>> = ({
   remove = <Remove />,
   port = <Port />,
   label = <Label />,
+  isDraggable = false,
   onRemove = () => undefined,
   onDrag = () => undefined,
   onDragStart = () => undefined,
@@ -137,7 +140,8 @@ export const Node: FC<Partial<NodeProps>> = ({
   const newX = x + offsetX;
   const newY = y + offsetY;
   const isLinkable = checkNodeLinkable(properties, enteredNode, canLinkNode);
-  const isMultiPort = ports?.filter(p => !p.properties?.hidden).length > 1;
+  const isMultiPort = ports?.filter((p) => !p.properties?.hidden).length > 1;
+  const [dragY, setDragY] = useState(0);
 
   const bind = useNodeDrag({
     x: newX,
@@ -149,6 +153,7 @@ export const Node: FC<Partial<NodeProps>> = ({
     onDrag: (...props) => {
       canvas.onDrag(...props);
       onDrag(...props);
+      setDragY(props[0].movement[1]);
     },
     onDragStart: (...props) => {
       canvas.onDragStart(...props);
@@ -158,6 +163,8 @@ export const Node: FC<Partial<NodeProps>> = ({
     onDragEnd: (...props) => {
       canvas.onDragEnd(...props);
       onDragEnd(...props);
+      console.log('props', props[0]);
+      setDragY(y);
       setDragging(false);
     }
   });
@@ -233,7 +240,137 @@ export const Node: FC<Partial<NodeProps>> = ({
     [childEdge, disabled, id]
   );
 
-  return (
+  return isDraggable ? (
+    <motion.g
+      initial={{
+        cursor: 'initial',
+        opacity: 0,
+        translateX: x,
+        translateY: y
+      }}
+      y={dragY}
+      animate={controls}
+    >
+      <motion.rect
+        {...bind()}
+        tabIndex={-1}
+        onKeyDown={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          onKeyDown(event, properties);
+        }}
+        onClick={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          onClick(event, properties);
+        }}
+        onTouchStart={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+        }}
+        onMouseEnter={(event) => {
+          event.stopPropagation();
+          canvas.onEnter(event, properties);
+          onEnter(event, properties);
+        }}
+        onMouseLeave={(event) => {
+          event.stopPropagation();
+          canvas.onLeave(event, properties);
+          onLeave(event, properties);
+        }}
+        className={classNames(css.rect, className, properties?.className, {
+          [css.active]: isActive,
+          [css.disabled]: disabled,
+          [css.unlinkable]: isLinkable === false,
+          [css.dragging]: dragging,
+          [css.children]: nodes?.length > 0,
+          [css.deleteHovered]: deleteHovered
+        })}
+        style={style}
+        height={height}
+        width={width}
+        rx={rx}
+        ry={ry}
+        initial={{
+          opacity: 0
+        }}
+        animate={{
+          opacity: 1
+        }}
+      />
+      {children && (
+        <foreignObject height={height} width={width} x={0} y={0}>
+          {typeof children === 'function'
+            ? (children as any)({ height, width, x, y, node: properties })
+            : children}
+        </foreignObject>
+      )}
+      {icon && properties.icon && (
+        <CloneElement<IconProps> element={icon} {...properties.icon} />
+      )}
+      {labels?.length > 0 &&
+        labels.map((l, index) => (
+          <CloneElement<LabelProps>
+            element={label}
+            key={index}
+            {...(l as LabelProps)}
+          />
+        ))}
+      {ports?.length > 0 &&
+        ports.map((p) => (
+          <CloneElement<PortProps>
+            element={port}
+            key={p.id}
+            active={!isMultiPort && dragging}
+            disabled={disabled}
+            offsetX={newX}
+            offsetY={newY}
+            onDragStart={(
+              event: DragEvent,
+              initial: Position,
+              data: PortData
+            ) => {
+              canvas.onDragStart(event, initial, properties, data);
+              onDragStart(event, initial, properties, data);
+              setDragging(true);
+            }}
+            onDrag={(event: DragEvent, initial: Position, data: PortData) => {
+              canvas.onDrag(event, initial, properties, data);
+              onDrag(event, initial, properties, data);
+            }}
+            onDragEnd={(
+              event: DragEvent,
+              initial: Position,
+              data: PortData
+            ) => {
+              canvas.onDragEnd(event, initial, properties, data);
+              onDragEnd(event, initial, properties, data);
+              setDragging(false);
+            }}
+            {...(p as PortProps)}
+          />
+        ))}
+      {!disabled && isActive && !readonly && remove && (
+        <CloneElement<RemoveProps>
+          element={remove}
+          y={height / 2}
+          x={width}
+          onClick={(event: React.MouseEvent<SVGGElement, MouseEvent>) => {
+            event.preventDefault();
+            event.stopPropagation();
+            onRemove(event, properties);
+            setDeleteHovered(false);
+          }}
+          onEnter={() => setDeleteHovered(true)}
+          onLeave={() => setDeleteHovered(false)}
+        />
+      )}
+      <g>
+        {edges?.length > 0 && edges.map(renderEdge)}
+        {nodes?.length > 0 && nodes.map(renderNode)}
+      </g>
+    </motion.g>
+  ) : (
     <motion.g
       initial={{
         cursor: 'initial',

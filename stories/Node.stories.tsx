@@ -1,7 +1,17 @@
 import React, { useState } from 'react';
 import { NodeData } from '../src/types';
 import { Canvas } from '../src/Canvas';
-import { Node, Edge, MarkerArrow, Port, Icon, Arrow, Label, Remove, Add } from '../src/symbols';
+import {
+  Node,
+  Edge,
+  MarkerArrow,
+  Port,
+  Icon,
+  Arrow,
+  Label,
+  Remove,
+  Add
+} from '../src/symbols';
 import { detectCircular, hasLink } from '../src/utils';
 
 export const LabelsAndIcons = () => (
@@ -12,7 +22,8 @@ export const LabelsAndIcons = () => (
           id: '1',
           text: 'Node 1',
           icon: {
-            url: 'https://s3.amazonaws.com/img.crft.app/package-slack-logo-bw.svg',
+            url:
+              'https://s3.amazonaws.com/img.crft.app/package-slack-logo-bw.svg',
             height: 25,
             width: 25
           }
@@ -21,7 +32,8 @@ export const LabelsAndIcons = () => (
           id: '2',
           text: 'Node 2',
           icon: {
-            url: 'https://s3.amazonaws.com/img.crft.app/package-flashpoint-logo-bw.svg',
+            url:
+              'https://s3.amazonaws.com/img.crft.app/package-flashpoint-logo-bw.svg',
             height: 25,
             width: 25
           }
@@ -30,7 +42,8 @@ export const LabelsAndIcons = () => (
           id: '3',
           text: 'Node 3',
           icon: {
-            url: 'https://s3.amazonaws.com/img.crft.app/package-twitter-logo-bw.svg',
+            url:
+              'https://s3.amazonaws.com/img.crft.app/package-twitter-logo-bw.svg',
             height: 25,
             width: 25
           }
@@ -48,12 +61,8 @@ export const LabelsAndIcons = () => (
           to: '3'
         }
       ]}
-      node={
-        <Node
-          icon={<Icon />}
-        />
-      }
-      onLayoutChange={layout => console.log('Layout', layout)}
+      node={<Node icon={<Icon />} />}
+      onLayoutChange={(layout) => console.log('Layout', layout)}
     />
   </div>
 );
@@ -67,7 +76,8 @@ export const Icons = () => (
           height: 50,
           width: 50,
           icon: {
-            url: 'https://s3.amazonaws.com/img.crft.app/package-slack-logo-bw.svg',
+            url:
+              'https://s3.amazonaws.com/img.crft.app/package-slack-logo-bw.svg',
             height: 25,
             width: 25
           }
@@ -77,7 +87,8 @@ export const Icons = () => (
           height: 50,
           width: 50,
           icon: {
-            url: 'https://s3.amazonaws.com/img.crft.app/package-flashpoint-logo-bw.svg',
+            url:
+              'https://s3.amazonaws.com/img.crft.app/package-flashpoint-logo-bw.svg',
             height: 25,
             width: 25
           }
@@ -87,7 +98,8 @@ export const Icons = () => (
           height: 50,
           width: 50,
           icon: {
-            url: 'https://s3.amazonaws.com/img.crft.app/package-twitter-logo-bw.svg',
+            url:
+              'https://s3.amazonaws.com/img.crft.app/package-twitter-logo-bw.svg',
             height: 25,
             width: 25
           }
@@ -105,12 +117,8 @@ export const Icons = () => (
           to: '3'
         }
       ]}
-      node={
-        <Node
-          icon={<Icon />}
-        />
-      }
-      onLayoutChange={layout => console.log('Layout', layout)}
+      node={<Node icon={<Icon />} />}
+      onLayoutChange={(layout) => console.log('Layout', layout)}
     />
   </div>
 );
@@ -171,7 +179,7 @@ export const LinkingNodeRestrictions = () => {
             }
           ]);
         }}
-        onLayoutChange={layout => console.log('Layout', layout)}
+        onLayoutChange={(layout) => console.log('Layout', layout)}
       />
     </div>
   );
@@ -218,7 +226,7 @@ export const LinkingNodes = () => {
             }
           ]);
         }}
-        onLayoutChange={layout => console.log('Layout', layout)}
+        onLayoutChange={(layout) => console.log('Layout', layout)}
       />
     </div>
   );
@@ -244,7 +252,12 @@ export const DynamicNodes = () => {
     <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }}>
       <button
         style={{ position: 'absolute', top: 10, left: 10, zIndex: 999 }}
-        onClick={() => setNodes([...nodes, { id: `a${Math.random()}`, text: `Node ${Math.random()}` }])}
+        onClick={() =>
+          setNodes([
+            ...nodes,
+            { id: `a${Math.random()}`, text: `Node ${Math.random()}` }
+          ])
+        }
       >
         Add Nodes
       </button>
@@ -262,7 +275,7 @@ export const DynamicNodes = () => {
             to: '3'
           }
         ]}
-        onLayoutChange={layout => console.log('Layout', layout)}
+        onLayoutChange={(layout) => console.log('Layout', layout)}
       />
     </div>
   );
@@ -298,15 +311,20 @@ export const ForeignObjects = () => (
       ]}
       node={
         <Node>
-          {event => (
+          {(event) => (
             <div style={{ padding: 10, textAlign: 'center' }}>
               <h3 style={{ color: 'white' }}>Age</h3>
-              <input type="range" min="1" max="100" value={event.node.data.value} />
+              <input
+                type="range"
+                min="1"
+                max="100"
+                value={event.node.data.value}
+              />
             </div>
           )}
         </Node>
       }
-      onLayoutChange={layout => console.log('Layout', layout)}
+      onLayoutChange={(layout) => console.log('Layout', layout)}
     />
   </div>
 );
@@ -335,7 +353,7 @@ export const VariableSizes = () => (
           to: '2'
         }
       ]}
-      onLayoutChange={layout => console.log('Layout', layout)}
+      onLayoutChange={(layout) => console.log('Layout', layout)}
     />
   </div>
 );
@@ -348,7 +366,8 @@ export const LongLabels = () => (
           id: '1',
           text: 'Node 1',
           icon: {
-            url: 'https://s3.amazonaws.com/img.crft.app/package-slack-logo-bw.svg',
+            url:
+              'https://s3.amazonaws.com/img.crft.app/package-slack-logo-bw.svg',
             height: 25,
             width: 25
           }
@@ -356,7 +375,8 @@ export const LongLabels = () => (
         {
           id: '2',
           icon: {
-            url: 'https://s3.amazonaws.com/img.crft.app/package-flashpoint-logo-bw.svg',
+            url:
+              'https://s3.amazonaws.com/img.crft.app/package-flashpoint-logo-bw.svg',
             height: 25,
             width: 25
           }
@@ -365,7 +385,8 @@ export const LongLabels = () => (
           id: '3',
           text: 'Node 3 with a long label for testing',
           icon: {
-            url: 'https://s3.amazonaws.com/img.crft.app/package-twitter-logo-bw.svg',
+            url:
+              'https://s3.amazonaws.com/img.crft.app/package-twitter-logo-bw.svg',
             height: 25,
             width: 25
           }
@@ -374,7 +395,8 @@ export const LongLabels = () => (
           id: '4',
           text: 'Node4withalongnobreakingspacelabel',
           icon: {
-            url: 'https://s3.amazonaws.com/img.crft.app/package-twitter-logo-bw.svg',
+            url:
+              'https://s3.amazonaws.com/img.crft.app/package-twitter-logo-bw.svg',
             height: 25,
             width: 25
           }
@@ -392,7 +414,8 @@ export const LongLabels = () => (
           height: 70,
           width: 70,
           icon: {
-            url: 'https://s3.amazonaws.com/img.crft.app/package-slack-logo-bw.svg',
+            url:
+              'https://s3.amazonaws.com/img.crft.app/package-slack-logo-bw.svg',
             height: 42,
             width: 42
           }
@@ -400,7 +423,8 @@ export const LongLabels = () => (
         {
           id: '8',
           icon: {
-            url: 'https://s3.amazonaws.com/img.crft.app/package-slack-logo-bw.svg',
+            url:
+              'https://s3.amazonaws.com/img.crft.app/package-slack-logo-bw.svg',
             height: 42,
             width: 42
           }
@@ -443,14 +467,60 @@ export const LongLabels = () => (
           to: '8'
         }
       ]}
-      node={
-        <Node
-          icon={<Icon />}
-        />
-      }
+      node={<Node icon={<Icon />} />}
     />
   </div>
 );
+
+export const DraggableNodes = () => {
+  const [nodes, setNodes] = useState<any[]>([
+    {
+      id: '1',
+      text: 'Node 1'
+    },
+    {
+      id: '2',
+      text: 'Node 2'
+    },
+    {
+      id: '3',
+      text: 'Node 3'
+    }
+  ]);
+
+  return (
+    <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }}>
+      <button
+        style={{ position: 'absolute', top: 10, left: 10, zIndex: 999 }}
+        onClick={() =>
+          setNodes([
+            ...nodes,
+            { id: `a${Math.random()}`, text: `Node ${Math.random()}` }
+          ])
+        }
+      >
+        Add Nodes
+      </button>
+      <Canvas
+        nodes={nodes}
+        node={<Node isDraggable />}
+        dragEdge={<div />}
+        edges={[
+          {
+            id: '1-2',
+            from: '1',
+            to: '2'
+          },
+          {
+            id: '1-3',
+            from: '1',
+            to: '3'
+          }
+        ]}
+      />
+    </div>
+  );
+};
 
 export default {
   title: 'Demos/Nodes',
